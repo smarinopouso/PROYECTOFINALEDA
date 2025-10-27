@@ -1,115 +1,147 @@
-# Proyecto Final: Análisis de Ventas y Presupuesto
+# Proyecto Final: Análisis Comparativo Ventas vs Presupuesto
 
-## 🔹 Descripción del proyecto
+## Descripción del Proyecto
 
-Este proyecto tiene como objetivo realizar un **análisis exploratorio de datos (EDA)** y generar un **dashboard operativo** con datos de ventas y presupuesto de la empresa, usando Python, Pandas y Power BI.  
-Se trabajó con **dos fuentes de datos**:
+Este proyecto realiza un análisis exploratorio de datos (EDA) comparativo entre las ventas reales y el presupuesto asignado para el año 2024. El objetivo es identificar patrones, desviaciones y oportunidades de mejora en el desempeño financiero y operativo.
 
-1. **Ventas (CSV)**: contiene información de ventas reales por cliente, artículo y fecha.  
-2. **Presupuesto (Excel)**: contiene el presupuesto de ventas por subfamilia y empresa.
+## Estructura del Proyecto
 
-Se realizaron las siguientes etapas: limpieza, transformación, análisis descriptivo, cálculo de métricas y preparación del dataset final para Power BI.
-
----
-
-## 🔹 Estructura de carpetas
-
+```
 PROYECTOFINALEDA/
-│
-├─ data/
-│ ├─ raw/ # Datos originales sin procesar
-│ │ ├─ ventas2024.csv
-│ │ └─ presupuesto2024.xlsx
-│ ├─ output/ # Datos procesados
-│ │ ├─ ventas2024_limpio.csv
-│ │ ├─ presupuesto2024_limpio.xlsx
-│ │ └─ final/
-│ │ ├─ df_final_para_powerbi.csv
-│ │ └─ df_final_para_powerbi.xlsx
-│
-├─ notebooks/ # Jupyter notebooks con análisis
-│ └─ ProyectoFinal_EDA.ipynb
-│
-├─ src/ # Scripts Python, funciones y utilidades
-│ └─ limpieza_transformacion.py
-│
-├─ README.md
-└─ PROYECTO_POWERBI.pbix # Dashboard final en Power BI
+├── data/
+│   ├── raw/                    # Datos originales
+│   │   ├── ventas2024.csv      # Datos de ventas bruto
+│   │   └── presupuesto2024.xlsx # Datos de presupuesto bruto
+│   ├── output/                 # Datos procesados
+│   │   ├── ventas2024_limpio.csv
+│   │   ├── presupuesto2024_limpio.xlsx
+│   │   └── final/
+│   │       └── df_final_completo.csv
+├── notebook/                   # Notebooks de análisis
+│   ├── 01-Analisis_ventas.ipynb
+│   ├── 02-Analisis_presupuesto.ipynb
+│   └── 03-Analisis_ventas_presupuesto.ipynb
+└── README.md                   # Documentación del proyecto
+```
 
-markdown
-Copiar código
+## Notebooks de Análisis
 
----
+### 1. 01-Analisis_ventas.ipynb
+**Objetivo:** Análisis y limpieza del dataset de ventas
 
-## 🔹 Limpieza y transformación de datos
+**Procesos realizados:**
+- Carga y exploración inicial de datos de ventas
+- Limpieza de columnas y normalización de nombres
+- Manejo de valores nulos y duplicados
+- Análisis estadístico descriptivo
+- Transformación de fechas y creación de variables temporales
+- Filtrado y eliminación de columnas no informativas
+- Exportación del dataset limpio
 
-1. **Homogeneización de columnas**  
-   - `codcompany` → `cod_empresa`  
-   - `ventas_(€)` → `ventas_presupuesto` (en presupuesto)  
-   - Se normalizó el formato de nombres (minúsculas, sin espacios ni caracteres especiales).
+**Resultados clave:**
+- Dataset de ventas procesado y limpio
+- Identificación de outliers y patrones en datos
+- Variables temporales agregadas (año, mes, month_name)
+- Eliminación de columnas constantes (typeline, amountdiscount)
 
-2. **Conversión de tipos**  
-   - Columna `fecha` convertida a tipo datetime.  
-   - Columnas numéricas convertidas a float/int según corresponda.
+### 2. 02-Analisis_presupuesto.ipynb
+**Objetivo:** Análisis y limpieza del dataset de presupuesto
 
-3. **Manejo de valores nulos y duplicados**  
-   - Se revisaron duplicados y se eliminaron registros repetidos por `(cod_empresa, idarticle, fecha)`.  
-   - Valores nulos en métricas de comparación (`dif_ventas_presupuesto`, `ratio_ventas_presupuesto`) se mantienen como `NaN` si no hay presupuesto asignado, para reflejar correctamente que no hay datos disponibles.
+**Procesos realizados:**
+- Carga y exploración de datos de presupuesto
+- Transformación de formato ancho a largo (melt)
+- Conversión de nombres de meses a números
+- Creación de variables temporales
+- Análisis estadístico descriptivo
+- Visualización de distribuciones y boxplots
+- Exportación del dataset limpio
 
-4. **Transformación de columnas de meses en filas**  
-   - En el dataset de presupuesto, las columnas `enero` a `diciembre` se transformaron a formato largo (`mes` y `presupuesto_mes`) usando `pd.melt()`.  
-   - Se creó la columna `month_name` con formato `YYYY-MM` para análisis temporal.
+**Resultados clave:**
+- Dataset de presupuesto transformado a formato largo
+- Variables temporales estandarizadas
+- Análisis de distribución de valores presupuestarios
+- Dataset listo para fusión con datos de ventas
 
----
+### 3. 03-Analisis_ventas_presupuesto.ipynb
+**Objetivo:** Fusión de datasets y análisis comparativo
 
-## 🔹 Merge de datasets
+**Procesos realizados:**
+- Carga de datasets limpios previos
+- Fusión inteligente de ventas y presupuesto
+- Manejo de combinaciones no coincidentes
+- Creación de métricas de comparación
+- Análisis estadístico combinado
+- Visualización de distribuciones y outliers
 
-- Se realizó un **merge left** de ventas con presupuesto usando las columnas:  
-  `cod_empresa` y `subfamilia`.  
-- Esto asegura que **todas las ventas se mantengan**, incluso si no tienen presupuesto asociado.  
-- Se calcularon las métricas:  
-  - `dif_ventas_presupuesto = ventas_(€) - presupuesto_mes`  
-  - `ratio_ventas_presupuesto = ventas_(€) / presupuesto_mes`  
-- Las métricas muestran `NaN` cuando no hay presupuesto para la venta correspondiente, lo cual es esperado.
+**Resultados clave:**
+- Dataset final con todas las columnas de ventas + datos de presupuesto
+- Métricas de desempeño (diferencia, ratio, cumplimiento)
+- Análisis de desviaciones presupuesto vs real
+- Dataset listo para dashboard e informe
 
----
+## Datos del Proyecto
 
-## 🔹 Análisis descriptivo
+### Dataset Final
+- **Filas:** >50,000 (cumple requisito mínimo)
+- **Columnas:** >20 (cumple requisito mínimo)
+- **Variables:** 
+  - Todas las columnas originales de ventas
+  - Datos de presupuesto agregados
+  - Métricas de análisis comparativo
 
-- Estadísticas básicas de columnas numéricas: `mean`, `min`, `max`, `std`.  
-- Frecuencia de categorías: `macrofamilia`, `familia`, `subfamilia`.  
-- Histogramas y boxplots para detectar outliers en ventas, presupuesto, diferencia y ratio.
+### Variables Clave
+- **Ventas:** `ventas_(€)`, `unidades`, `fecha`, `cliente`
+- **Presupuesto:** `presupuesto_mes`, `tipo_cliente`
+- **Comparación:** `dif_ventas_presupuesto`, `ratio_ventas_presupuesto`, `cumplimiento_presupuesto`
+- **Categorización:** `macrofamilia`, `familia`, `subfamilia`
 
----
+## Herramientas Utilizadas
 
-## 🔹 Dataset final
+- **Python 3.x**
+- **Pandas** - Manipulación y análisis de datos
+- **Jupyter Notebook** - Desarrollo interactivo
+- **Matplotlib/Seaborn** - Visualizaciones
+- **VS Code** - Entorno de desarrollo
 
-- `df_final_para_powerbi.csv` y `df_final_para_powerbi.xlsx`  
-- Columnas principales:
 
-cod_empresa | idcustomer | fecha | idarticle | unidades | ventas_(€) | ventas_presupuesto | dif_ventas_presupuesto | ratio_ventas_presupuesto | macrofamilia | familia | subfamilia | month_name | year | month
+## 📊 Dashboard en Power BI
 
-yaml
-Copiar código
+Este dashboard interactivo permite visualizar el desempeño de ventas en comparación con el presupuesto por subfamilia de artículo. Incluye métricas clave, gráficos interactivos y filtros para explorar los datos.
 
-- Listo para **Power BI**, sin eliminar ventas, con métricas calculadas y NaN donde no hay presupuesto.
+### 🛠️ Visualizaciones Incluidas
 
----
+- **KPIs principales**:
+  - **Ventas Totales (€)**: Valor total de ventas.
+  - **% Cumplimiento del Presupuesto**: Relación entre ventas y presupuesto.
+  - **Margen Bruto Total (€)**: Beneficio bruto (ventas - coste).
+- **Gráficos**:
+  - **Línea**: Evolución de `Ventas` vs `Presupuesto` por mes.
+  - **Barras**: `Ventas` por `subfamilia`.
+  - **Circular**: Distribución de `Ventas` por `macrofamilia`.
+  - **Medidor**: `% Cumplimiento` global.
+- **Filtros interactivos**:
+  - `Empresa`, `Mes`, `Subfamilia`.
 
-## 🔹 Power BI
+### 🔍 Hallazgos Clave del Análisis
 
-- Se creó un **dashboard interactivo** que incluye:  
-  - KPIs de total ventas, total presupuesto, diferencia y ratio promedio.  
-  - Gráficos de barras comparando ventas vs presupuesto por macrofamilia, familia y subfamilia.  
-  - Gráficos de líneas mostrando evolución temporal por `month_name`.  
-  - Filtros (slicers) por empresa, año, macrofamilia, familia y subfamilia.
+- **Mayor desviación positiva**: La subfamilia **FLOTADOR LING-LINE** superó su presupuesto en **94290 €** en el mes de **NOVIEMBRE**.
+- **Mayor desviación negativa**: La subfamilia **BIN EPE** se quedó por debajo del presupuesto en **-87219,6 €** en el mes de **DICIEMBRE**.
+- **Mes con mayor cumplimiento**: El mes de **DICIEMBRE** tuvo el mayor cumplimiento del presupuesto con un **1089,25**.
+- **Mayor contribución por macrofamilia**: La macrofamilia **ENVASES Y EMBALAJES** representa el **12361451,41** del total de ventas.
 
-- El dashboard permite analizar **cumplimiento de presupuesto**, detectar subfamilias con desviaciones y realizar seguimiento mensual de ventas.
+### 📌 Recomendaciones
 
----
+- Impulsar las subfamilias con bajo rendimiento.
+- Revisar la planificación presupuestal en categorías con desviaciones constantes.
 
-## 🔹 Conclusión
+### 📁 Archivo del Dashboard
 
-- El proyecto muestra un **flujo completo de EDA y preparación de datos** para análisis y visualización.  
-- Todas las métricas y datos están preparados para ser utilizados en **Power BI**, cumpliendo con los requisitos del proyecto final.  
-- La carpeta `src` contiene scripts reutilizables para limpieza, transformación y cálculo de métricas, facilitando reproducir el proceso.
+- **Nombre del archivo**: `dashboardeda.pbix`
+- **Ubicación**: Carpeta `dashboardeda/` en el repositorio.
+
+## Autores
+Susana Mariño Pouso
+
+## Licencia
+
+Este proyecto está destinado a fines educativos.
